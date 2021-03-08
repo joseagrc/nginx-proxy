@@ -1,5 +1,5 @@
-FROM nginx:1.19.3
-LABEL maintainer="Jason Wilder mail@jasonwilder.com"
+FROM nginx:latest
+LABEL maintainer="Jose Arturo Garcia jose.arturo.garcia@gmail.com"
 
 # Install wget and install/updates certificates
 RUN apt-get update \
@@ -14,6 +14,16 @@ RUN apt-get update \
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
  && sed -i 's/worker_processes  1/worker_processes  auto/' /etc/nginx/nginx.conf
 
+RUN { \
+      echo 'server_tokens off;'; \
+      echo 'client_max_body_size 10G;'; \
+      echo 'client_body_timeout 6m;'; \
+      echo 'client_body_buffer_size 128K;'; \
+      echo 'client_header_buffer_size 1k;'; \
+      echo 'client_header_timeout 3m;'; \
+      echo 'worker_rlimit_nofile 100000;'; \
+    } > /etc/nginx/conf.d/my_proxy.conf
+    
 # Install Forego
 ADD https://github.com/jwilder/forego/releases/download/v0.16.1/forego /usr/local/bin/forego
 RUN chmod u+x /usr/local/bin/forego
